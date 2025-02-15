@@ -92,40 +92,47 @@
     </div>
 
     <script>
-       document.addEventListener("DOMContentLoaded", function() {
-    // Проверяем, вошёл ли пользователь
-    const activeUser = JSON.parse(localStorage.getItem("activeUser"));
-    if (!activeUser) {
-        alert("Сначала войдите в систему!");
-        window.location.href = "index.html";
-        return;
-    }
+    document.addEventListener("DOMContentLoaded", function() {
+        const activeUser = JSON.parse(localStorage.getItem("activeUser"));
+        if (!activeUser) {
+            alert("Сначала войдите в систему!");
+            window.location.href = "index.html";
+            return;
+        }
 
-    const videoGrid = document.getElementById("videoGrid");
-    const videos = JSON.parse(localStorage.getItem("videos")) || [];
+        // Проверяем, есть ли пользователь в `users`
+        const users = JSON.parse(localStorage.getItem("users")) || [];
+        const userExists = users.some(user => user.username === activeUser.username);
 
-    // Если видео нет, показываем сообщение
-    if (videos.length === 0) {
-        videoGrid.innerHTML = "<p style='color:white; text-align:center;'>Нет загруженных видео</p>";
-    } else {
-        videos.forEach((video, index) => {
-            videoGrid.innerHTML += `
-                <div class="video-item">
-                    <video controls width="100%">
-                        <source src="${video.videoUrl}" type="video/mp4">
-                        Ваш браузер не поддерживает видео.
-                    </video>
-                    <div class="video-info">
-                        <div class="video-title">${video.title}</div>
-                        <div class="video-description">${video.description}</div>
-                    </div>
-                </div>
-            `;
+        if (!userExists) {
+            localStorage.removeItem("activeUser");
+            alert("Ваш аккаунт был удалён. Пожалуйста, войдите снова.");
+            window.location.href = "index.html";
+            return;
+        }
+
+        // Кнопка "Выйти"
+        const logoutBtn = document.createElement("button");
+        logoutBtn.innerText = "Выйти";
+        logoutBtn.style.position = "fixed";
+        logoutBtn.style.top = "10px";
+        logoutBtn.style.right = "10px";
+        logoutBtn.style.padding = "10px";
+        logoutBtn.style.background = "red";
+        logoutBtn.style.color = "white";
+        logoutBtn.style.border = "none";
+        logoutBtn.style.cursor = "pointer";
+
+        logoutBtn.addEventListener("click", function() {
+            localStorage.removeItem("activeUser");
+            alert("Вы вышли из системы.");
+            window.location.href = "index.html";
         });
-    }
-});
 
-    </script>
+        document.body.appendChild(logoutBtn);
+    });
+</script>
+
     
 </body>
 </html>
