@@ -77,15 +77,32 @@
     </div>
 
     <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const activeUser = JSON.parse(localStorage.getItem("activeUser"));
+
+        if (activeUser) {
+            // Проверяем, есть ли пользователь в `users`
+            const users = JSON.parse(localStorage.getItem("users")) || [];
+            const userExists = users.some(user => user.username === activeUser.username);
+
+            if (!userExists) {
+                // Если пользователя удалили, разлогиниваем его
+                localStorage.removeItem("activeUser");
+                alert("Ваш аккаунт был удалён. Пожалуйста, войдите снова.");
+                return;
+            }
+
+            // Если пользователь существует, сразу переходим на `main1.html`
+            window.location.href = "main1.html";
+        }
+
+        // Обычный вход по логину и паролю
         document.getElementById("loginForm").addEventListener("submit", function(event) {
             event.preventDefault();
             const username = document.getElementById("username").value.trim();
             const password = document.getElementById("password").value.trim();
 
-            // Получаем список пользователей из `localStorage`
-            const users = JSON.parse(localStorage.getItem("users")) || [];
-
-            // Проверяем, есть ли такой пользователь
+            let users = JSON.parse(localStorage.getItem("users")) || [];
             const user = users.find(user => user.username === username && user.password === password);
 
             if (!user) {
@@ -97,8 +114,11 @@
             localStorage.setItem("activeUser", JSON.stringify(user));
 
             alert("Вход выполнен успешно!");
-            window.location.href = "main1.html"; // Переход на страницу с видео
+            window.location.href = "main1.html";
         });
-    </script>
+    });
+</script>
+
+
 </body>
 </html>
